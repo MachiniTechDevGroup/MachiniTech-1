@@ -6,12 +6,13 @@ public class OreMachiniTech {
 		private int id, meta;
 		private int harv;
 		public static final int NUM_ORES = 4;
+		public static final int Ore_ID = 500;
 		public static final OreMachiniTech[] ores = new OreMachiniTech[NUM_ORES];
 		public static void createOres() {
 			ores[0] = new OreMachiniTech (500, 0, "Copper", 1, new OreMachiniTech.Params(1, 63, 15, 4, 12));
-			ores[1] = new OreMachiniTech (500, 1, "Tin", 1, new OreMachiniTech.Params(16, 48, 8, 4, 8));
-			ores[2] = new OreMachiniTech (500, 2, "Lead", 1, new OreMachiniTech.Params(16, 24, 2, 4, 8));
-			ores[3] = new OreMachiniTech (500, 3, "Nickel", 2, new OreMachiniTech.Params(16, 64, 4, 8, 12));
+			ores[1] = new OreMachiniTech (501, 0, "Tin", 1, new OreMachiniTech.Params(16, 48, 8, 4, 8));
+			ores[2] = new OreMachiniTech (502, 0, "Lead", 1, new OreMachiniTech.Params(16, 24, 2, 4, 8));
+			ores[3] = new OreMachiniTech (503, 0, "Nickel", 2, new OreMachiniTech.Params(16, 64, 4, 8, 12));
 		}
 		public OreMachiniTech (int i, int m, String n, int h, Params p) {
 			this.Name = n;
