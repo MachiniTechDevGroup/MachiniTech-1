@@ -1,5 +1,7 @@
 package machinitech.common.block;
 
+import machinitech.common.item.IngotMachiniTech;
+
 public class OreMachiniTech {
 		public String Name;
 		private Params p;
@@ -13,6 +15,7 @@ public class OreMachiniTech {
 			ores[1] = new OreMachiniTech (501, 0, "Tin", 1, new OreMachiniTech.Params(16, 48, 8, 4, 8));
 			ores[2] = new OreMachiniTech (502, 0, "Lead", 1, new OreMachiniTech.Params(16, 24, 2, 4, 8));
 			ores[3] = new OreMachiniTech (503, 0, "Nickel", 2, new OreMachiniTech.Params(16, 64, 4, 8, 12));
+			IngotMachiniTech.createIngots(ores);
 		}
 		public OreMachiniTech (int i, int m, String n, int h, Params p) {
 			this.Name = n;

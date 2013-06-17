@@ -18,4 +18,9 @@ public class IngotMachiniTech {
 	public String getName() {
 		return this.Name;
 	}
+	public static void createIngots(OreMachiniTech[] ores) {
+		for (int i = 0; i < ores.length; i++) {
+			ingots[i] = new IngotMachiniTech(ores[i]);
+		}
+	}
 }
