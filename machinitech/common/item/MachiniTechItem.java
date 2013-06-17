@@ -19,4 +19,9 @@ public class MachiniTechItem extends Item {
 	public void registerIcons(IconRegister reg) {
 		icon = reg.registerIcon(MachiniTechCore.ModID + ":" + this.getUnlocalizedName().substring(5));
 	}
+	@SideOnly(Side.CLIENT)
+	@Override
+	public Icon getIconFromDamage(int i) {
+		return this.icon;
+	}
 }

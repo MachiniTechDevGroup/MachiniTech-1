@@ -19,4 +19,8 @@ public class MachiniTechBlock extends Block {
 	public void registerIcons(IconRegister reg) {
 		icon = reg.registerIcon(MachiniTechCore.ModID + ":" + this.getUnlocalizedName().substring(5));
 	}
+	@SideOnly(Side.CLIENT)
+	public Icon getIcon(int par1, int par2) {
+		return this.icon;
+	}
 }

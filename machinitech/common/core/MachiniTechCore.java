@@ -6,7 +6,9 @@ import machinitech.common.block.MachiniTechOreStorageBlock;
 import machinitech.common.block.OreMachiniTech;
 import machinitech.common.item.IngotMachiniTech;
 import machinitech.common.item.MachiniTechIngot;
+import machinitech.common.world.MachiniTechWorldGenerator;
 import net.minecraft.creativetab.CreativeTabs;
+import cpw.mods.fml.common.registry.GameRegistry;
 
 public class MachiniTechCore {
 	public static final String ModID = "MachiniTech";
@@ -25,6 +27,7 @@ public class MachiniTechCore {
 			ingots[i] = new MachiniTechIngot(IngotMachiniTech.ingots[i]);
 			orestore[i] = new MachiniTechOreStorageBlock(OreMachiniTech.ores[i]);
 		}
+		GameRegistry.registerWorldGenerator(new MachiniTechWorldGenerator());
 	}
 	public static void postInit() {
 		

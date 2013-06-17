@@ -14,7 +14,7 @@ import cpw.mods.fml.common.network.NetworkMod;
 @Mod(modid = "modMachiniTech", name = "MachiniTech", version = "1.0.1.0")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false)
 public class MachiniTech {
-	@Instance("test")
+	@Instance("modMachiniTech")
 	MachiniTech instance;
 	
 	@SidedProxy(clientSide="machinitech.common.core.proxy.ClientProxy", serverSide="machinitech.common.core.proxy.CommonProxy")
