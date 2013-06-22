@@ -23,7 +23,7 @@ public class MachiniTech {
 
 	  @Mod.PreInit
 	  public void preInit(FMLPreInitializationEvent event) {
-		  //core.preInit(event.getSourceFile(), this);
+		  core.preInit(event);
 	  }
 
 	  @Mod.Init
