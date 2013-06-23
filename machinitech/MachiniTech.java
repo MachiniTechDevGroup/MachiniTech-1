@@ -11,7 +11,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 
-@Mod(modid = "modMachiniTech", name = "MachiniTech", version = "1.0.1.0")
+@Mod(modid = "modMachiniTech", name = "MachiniTech", version = "1.0.1.2")
 @NetworkMod(clientSideRequired = true, serverSideRequired = false)
 public class MachiniTech {
 	@Instance("modMachiniTech")

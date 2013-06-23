@@ -18,8 +18,8 @@ public class MachiniTechHoe extends ItemHoe {
 	@SideOnly(Side.CLIENT)
 	private Icon icon;
 	public MachiniTechHoe(EnumToolMaterial par2EnumToolMaterial, IngotMachiniTech base) {
-		super(ToolHandler.hoeIDdef + ToolHandler.getNumTools(), par2EnumToolMaterial);
-		this.setUnlocalizedName(MachiniTechCore.ModID + ".hoe" + (ToolHandler.getNumTools() - 1));
+		super(ToolHandler.hoeIDdef + (base.getID() - IngotMachiniTech.Ingot_ID), par2EnumToolMaterial);
+		this.setUnlocalizedName(MachiniTechCore.ModID + ".hoe" + (base.getID() - IngotMachiniTech.Ingot_ID));
 		GameRegistry.registerItem(this, this.getUnlocalizedName().substring(5));
 		GameRegistry.addRecipe(new ShapedOreRecipe(this, true, "ii ", " s ", " s ", Character.valueOf('i'), "ingot" + base.getName(), Character.valueOf('s'), Item.stick));
 		GameRegistry.addRecipe(new ShapedOreRecipe(this, true, " ii", " s ", " s ", Character.valueOf('i'), "ingot" + base.getName(), Character.valueOf('s'), Item.stick));

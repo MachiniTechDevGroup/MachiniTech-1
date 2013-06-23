@@ -18,10 +18,11 @@ public class MachiniTechSword extends ItemSword {
 	@SideOnly(Side.CLIENT)
 	private Icon icon;
 	public MachiniTechSword(EnumToolMaterial par2EnumToolMaterial, IngotMachiniTech base) {
-		super(ToolHandler.swordIDdef + ToolHandler.getNumTools(), par2EnumToolMaterial);
-		this.setUnlocalizedName(MachiniTechCore.ModID + ".sword" + (ToolHandler.getNumTools() - 1));
+		super(ToolHandler.swordIDdef + (base.getID() - IngotMachiniTech.Ingot_ID), par2EnumToolMaterial);
+		this.setUnlocalizedName(MachiniTechCore.ModID + ".sword" + (base.getID() - IngotMachiniTech.Ingot_ID));
 		GameRegistry.registerItem(this, this.getUnlocalizedName().substring(5));
 		GameRegistry.addRecipe(new ShapedOreRecipe(this, true, " i ", " i ", " s ", Character.valueOf('i'), "ingot" + base.getName(), Character.valueOf('s'), Item.stick));
+		System.out.println("ingot" + base.getName());
 		LanguageRegistry.addName(this, base.getName() + " Sword");
 	}
 	@SideOnly(Side.CLIENT)
