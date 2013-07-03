@@ -11,11 +11,11 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 
-@Mod(modid = "modMachiniTech", name = "MachiniTech", version = "1.0.1.2")
-@NetworkMod(clientSideRequired = true, serverSideRequired = false)
+@Mod(modid = "modMachiniTech", name = "MachiniTech", version = "1.0.2.0")
+@NetworkMod(clientSideRequired = true, serverSideRequired = true)
 public class MachiniTech {
 	@Instance("modMachiniTech")
-	MachiniTech instance;
+	public static MachiniTech instance;
 	
 	@SidedProxy(clientSide="machinitech.common.core.proxy.ClientProxy", serverSide="machinitech.common.core.proxy.CommonProxy")
 	public static CommonProxy proxy;

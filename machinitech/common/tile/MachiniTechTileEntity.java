@@ -3,7 +3,7 @@ package machinitech.common.tile;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
-public class MachiniTechTileEntity extends TileEntity {
+public abstract class MachiniTechTileEntity extends TileEntity {
 	public void writeToNBT(NBTTagCompound par1) {
 			super.writeToNBT(par1);
 	}

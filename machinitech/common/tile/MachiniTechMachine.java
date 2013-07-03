@@ -1,6 +1,11 @@
 package machinitech.common.tile;
 
-public class MachiniTechMachine extends MachiniTechTileEntity {
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.Container;
+import net.minecraft.world.World;
+
+public abstract class MachiniTechMachine extends MachiniTechTileEntity {
 	private int Tier;
 	public MachiniTechMachine (int t) {
 		this.Tier = t;
