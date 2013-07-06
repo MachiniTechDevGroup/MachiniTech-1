@@ -50,7 +50,7 @@ public class MachineSmelterSmall extends MachiniTechBlockContainer {
 		this.setUnlocalizedName(MachiniTechCore.ModID + ".blocktilesmeltersmall" + (active ? "" : "active"));
 		GameRegistry.registerBlock(this, this.getUnlocalizedName().substring(5));
 		this.setResistance(10f);
-		this.setLightValue(active ? 0f: .875f);
+		this.setLightValue(!active ? 0f: .875f);
 		this.setHardness(2f);
 		this.setTickRandomly(true);
 		this.setStepSound(soundStoneFootstep);

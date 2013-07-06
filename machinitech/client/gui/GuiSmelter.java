@@ -39,6 +39,7 @@ public class GuiSmelter extends MachiniTechGuiContainer {
 	protected void drawGuiContainerForegroundLayer(int i, int j) {
 		fontRenderer.drawString(entity.getInvName(), 56, 6, 4210752);
 		fontRenderer.drawString(StatCollector.translateToLocal("container.inventory"), 8, this.ySize - 96 + 5, 4210752);
+		fontRenderer.drawString("Heat: " + this.entity.getHeat(), 115, this.ySize - 96 + 5, 4210752);
 	}
 
 }

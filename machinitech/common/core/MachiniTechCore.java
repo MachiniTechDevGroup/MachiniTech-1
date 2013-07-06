@@ -2,6 +2,8 @@ package machinitech.common.core;
 
 import machinitech.MachiniTech;
 import machinitech.client.gui.GuiHelper;
+import machinitech.common.addon.AddonManager;
+import machinitech.common.addon.TileEntityHopperFast;
 import machinitech.common.block.MachineSmelterSmall;
 import machinitech.common.block.MachiniTechBlockContainer;
 import machinitech.common.block.MachiniTechOre;
@@ -22,6 +24,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 
 public class MachiniTechCore {
 	
+	//All the IMPORTANT stuff goes here
 	public static final String ModID = "MachiniTech";
 	
 	public static CreativeTabs ctblock = new CreativeTabMachiniTech("MachiniTech Blocks");
@@ -38,7 +41,11 @@ public class MachiniTechCore {
 	public static MachiniTechCoilComponent coilcomp;
 	public static MachiniTechCoil coil;
 	
+	public static TileEntityHopperFast fasthopper;
+	
 	public static Configuration config;
+	
+	public static AddonManager addon;
 	
 	public static void preInit(FMLPreInitializationEvent event) {
 		config = new Configuration(event.getSuggestedConfigurationFile());
@@ -66,6 +73,7 @@ public class MachiniTechCore {
 		smelter = new MachineSmelterSmall(false);
 		smelteractive = new MachineSmelterSmall(true);
 		
+		addon = new AddonManager();
 	}
 	public static void postInit() {
 		

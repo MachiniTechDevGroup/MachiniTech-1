@@ -18,6 +18,8 @@ public class ContainerSmelter extends MachiniTechContainer {
 	private int lastCookTime;
 	private int lastBurnTime;
 	private int lastItemBurnTime;
+	private short itemCookTime;
+	private short smelterHeat;
 	
 	public ContainerSmelter(TileEntitySmelter te, InventoryPlayer inventory) {
 		this.te = te;
@@ -30,8 +32,8 @@ public class ContainerSmelter extends MachiniTechContainer {
 		for (int h = 0; h < 3; h++) {
 			this.addSlotToContainer(new SlotSmeltInput(te, h + 5, 18 * h + 8, 56));
 		}
-		//Box slot
-		this.addSlotToContainer(new Slot(te, 8, 80, 38));
+		//Ash slot
+		this.addSlotToContainer(new SlotOutput(te, 8, 80, 38));
 		//Smelting output slots
 		for (int h = 0; h < 3; h++) {
 			this.addSlotToContainer(new SlotOutput(te, h + 9, 18 * h + 62, 20));
@@ -71,17 +73,19 @@ public class ContainerSmelter extends MachiniTechContainer {
 	
 	public void addCraftingToCrafters(ICrafting par1ICrafting) {
         super.addCraftingToCrafters(par1ICrafting);
-        par1ICrafting.sendProgressBarUpdate(this, 0, this.te.furnaceCookTime);
+        par1ICrafting.sendProgressBarUpdate(this, 0, this.te.progress);
         par1ICrafting.sendProgressBarUpdate(this, 1, this.te.furnaceBurnTime);
         par1ICrafting.sendProgressBarUpdate(this, 2, this.te.currentItemBurnTime);
+        par1ICrafting.sendProgressBarUpdate(this, 3, this.te.getItemCookTime());
+        par1ICrafting.sendProgressBarUpdate(this, 4, this.te.getHeat());
     }
 	
 	public void detectAndSendChanges() {
         super.detectAndSendChanges();
         for (int i = 0; i < this.crafters.size(); ++i) {
             ICrafting icrafting = (ICrafting)this.crafters.get(i);
-            if (this.lastCookTime != this.te.furnaceCookTime) {
-                icrafting.sendProgressBarUpdate(this, 0, this.te.furnaceCookTime);
+            if (this.lastCookTime != this.te.progress) {
+                icrafting.sendProgressBarUpdate(this, 0, this.te.progress);
             }
             if (this.lastBurnTime != this.te.furnaceBurnTime) {
                 icrafting.sendProgressBarUpdate(this, 1, this.te.furnaceBurnTime);
@@ -89,22 +93,36 @@ public class ContainerSmelter extends MachiniTechContainer {
             if (this.lastItemBurnTime != this.te.currentItemBurnTime) {
                 icrafting.sendProgressBarUpdate(this, 2, this.te.currentItemBurnTime);
             }
+            if (this.itemCookTime != this.te.getItemCookTime()) {
+            	icrafting.sendProgressBarUpdate(this, 3, this.te.getItemCookTime());
+            }
+            if (this.smelterHeat != this.te.getHeat()) {
+            	icrafting.sendProgressBarUpdate(this, 4, this.te.getHeat());
+            }
         }
-        this.lastCookTime = this.te.furnaceCookTime;
+        this.lastCookTime = this.te.progress;
         this.lastBurnTime = this.te.furnaceBurnTime;
         this.lastItemBurnTime = this.te.currentItemBurnTime;
+        this.itemCookTime = this.te.getItemCookTime();
+        this.smelterHeat = this.te.getHeat();
     }
 	
 	@SideOnly(Side.CLIENT)
     public void updateProgressBar(int par1, int par2) {
         if (par1 == 0) {
-            this.te.furnaceCookTime = (short) par2;
+            this.te.progress = (short) par2;
         }
         if (par1 == 1) {
             this.te.furnaceBurnTime = par2;
         }
         if (par1 == 2){
             this.te.currentItemBurnTime = par2;
+        }
+        if (par1 == 3) {
+        	this.te.setItemCookTime(par2);
+        }
+        if (par1 == 4) {
+        	this.te.setHeat((short) par2);
         }
     }
 	

@@ -2,6 +2,7 @@ package machinitech.common.tile;
 
 import machinitech.common.block.MachineSmelterSmall;
 import machinitech.common.item.MachiniTechCoil;
+import machinitech.common.item.MachiniTechItem;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
@@ -14,6 +15,7 @@ import net.minecraft.item.ItemTool;
 import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.liquids.ILiquidTank;
 import net.minecraftforge.liquids.ITankContainer;
@@ -45,10 +47,12 @@ public class TileEntitySmelter extends MachiniTechMachine implements ISidedInven
 	 */
 	private ItemStack[] inv = new ItemStack[25];
 	public int furnaceBurnTime = 0;
+	private static final short ASH_TIME = 800;
+	private short ashProgress = 0;
 	private short coilTier = 0;
 	private LiquidTank tank;
 	private LiquidTank another;
-	public short furnaceCookTime = 0;
+	private short heat = 0;
 	private Container cont;
 	/**
 	 * The number of ticks that the furnace will keep burning
@@ -68,7 +72,6 @@ public class TileEntitySmelter extends MachiniTechMachine implements ISidedInven
 	private short itemCookTime = 200;
 	public TileEntitySmelter() {
 		super(0);
-		this.itemCookTime = (short)(200 / (coilTier + 1));
 		tank = new LiquidTank(LiquidContainerRegistry.BUCKET_VOLUME * TANK_CAP);
 		another = new LiquidTank(LiquidContainerRegistry.BUCKET_VOLUME * TANK_CAP);
 	}
@@ -100,10 +103,11 @@ public class TileEntitySmelter extends MachiniTechMachine implements ISidedInven
         }
 
         this.furnaceBurnTime = par1NBTTagCompound.getShort("BurnTime");
-        this.furnaceCookTime = par1NBTTagCompound.getShort("CookTime");
+        this.progress = par1NBTTagCompound.getShort("CookTime");
         this.itemCookTime = par1NBTTagCompound.getShort("ItemCookTime");
         this.coilTier = par1NBTTagCompound.getShort("CoilTier");
-        this.currentItemBurnTime = this.getItemBurnTime(this.inv[17], this.coilTier + 1);
+        this.currentItemBurnTime = this.getItemBurnTime(this.inv[17]);
+        this.heat = par1NBTTagCompound.getShort("Heat");
 
         if (par1NBTTagCompound.hasKey("CustomName"))
         {
@@ -117,9 +121,10 @@ public class TileEntitySmelter extends MachiniTechMachine implements ISidedInven
     public void writeToNBT(NBTTagCompound par1NBTTagCompound) {
         super.writeToNBT(par1NBTTagCompound);
         par1NBTTagCompound.setShort("BurnTime", (short)this.furnaceBurnTime);
-        par1NBTTagCompound.setShort("CookTime", (short)this.furnaceCookTime);
+        par1NBTTagCompound.setShort("CookTime", (short)this.progress);
         par1NBTTagCompound.setShort("ItemCookTime", this.itemCookTime);
         par1NBTTagCompound.setShort("CoilTier", this.coilTier);
+        par1NBTTagCompound.setShort("Heat", this.heat);
         NBTTagList nbttaglist = new NBTTagList();
 
         for (int i = 0; i < this.inv.length; ++i) {
@@ -139,7 +144,7 @@ public class TileEntitySmelter extends MachiniTechMachine implements ISidedInven
     }
     
     public int getCookProgressScaled(int par1) {
-        return this.furnaceCookTime * par1 / this.itemCookTime;
+        return this.progress * par1 / this.itemCookTime;
     }
 
 	@Override
@@ -147,7 +152,6 @@ public class TileEntitySmelter extends MachiniTechMachine implements ISidedInven
 		ItemStack stack = getStackInSlot(i);
 		if (i == 18) {
 			this.coilTier = 0;
-			this.itemCookTime = 200;
 		}
         if (stack != null) {
                 if (stack.stackSize <= j) {
@@ -178,9 +182,8 @@ public class TileEntitySmelter extends MachiniTechMachine implements ISidedInven
                 itemstack.stackSize = getInventoryStackLimit();
         }
 		if (i == 18) {
-			if (this.getStackInSlot(18) != null) {
+			if (this.getStackInSlot(18) != null && this.getStackInSlot(18).getItem() instanceof MachiniTechCoil) {
 				this.coilTier = (short)((MachiniTechCoil)itemstack.getItem()).getTier(itemstack.getItemDamage());
-				this.itemCookTime = (short)(200 / (this.coilTier + 1));
 			}
 		}
 	}
@@ -215,35 +218,8 @@ public class TileEntitySmelter extends MachiniTechMachine implements ISidedInven
 		
 	}
 	
-	public static int getItemBurnTime(ItemStack par0ItemStack, int tier) {
-		if (par0ItemStack == null) {
-			return 0;
-		} else {
-			int var1 = par0ItemStack.getItem().itemID;
-			Item var2 = par0ItemStack.getItem();
-			if (par0ItemStack.getItem() instanceof ItemBlock && Block.blocksList[var1] != null) {
-				Block var3 = Block.blocksList[var1];
-				if (var3 == Block.woodSingleSlab) {
-					return tier * 150;
-				}
-				if (var3.blockMaterial == Material.wood) {
-					return tier * 300;
-				}
-			}
-			if (var2 instanceof ItemTool && ((ItemTool) var2).getToolMaterialName().equals("WOOD"))
-				return tier * 200;
-			if (var1 == Item.stick.itemID)
-				return tier * 100;
-			if (var1 == Item.coal.itemID)
-				return tier * 1600;
-			if (var1 == Item.bucketLava.itemID)
-				return tier * 20000;
-			if (var1 == Block.sapling.blockID)
-				return tier * 100;
-			if (var1 == Item.blazeRod.itemID)
-				return tier * 2400;
-			return tier * GameRegistry.getFuelValue(par0ItemStack);
-		}
+	public static int getItemBurnTime(ItemStack par0ItemStack) {
+		return TileEntityFurnace.getItemBurnTime(par0ItemStack);
     }
 	
 	@Override
@@ -252,11 +228,21 @@ public class TileEntitySmelter extends MachiniTechMachine implements ISidedInven
         boolean update = false;
         if (this.furnaceBurnTime > 0) {
             --this.furnaceBurnTime;
+            if (this.heat < (this.coilTier * 2000) + 2000) {
+            	this.heat += (this.coilTier + 1);
+            	this.itemCookTime = (short) ((this.heat / -50) + 200);//Well. Anyone wanna wait for a long time for this smelter to heat up?
+            } else if (this.heat >= (this.coilTier * 2000) + 2000) {
+            	this.heat = (short) ((this.coilTier * 2000) + 2000);
+            }
+        } else {
+        	if (this.heat > 0) {
+        		this.heat--;
+        	}
         }
         if (!this.worldObj.isRemote) {
             if (this.furnaceBurnTime == 0 && this.canSmelt()) {
-                this.currentItemBurnTime = getItemBurnTime(this.inv[17], this.coilTier + 1);
-                this.furnaceBurnTime = getItemBurnTime(this.inv[17], this.coilTier + 1);
+                this.currentItemBurnTime = getItemBurnTime(this.inv[17]);
+                this.furnaceBurnTime = getItemBurnTime(this.inv[17]);
                 if (this.furnaceBurnTime > 0) {
                     update = true;
                     //Reduce the fuel slot
@@ -269,16 +255,27 @@ public class TileEntitySmelter extends MachiniTechMachine implements ISidedInven
                 }
             }
             if (this.isActive() && this.canSmelt()) {
-                ++this.furnaceCookTime;
+                ++this.progress;
                 //Done smelting?
-                if (this.furnaceCookTime == this.itemCookTime) {
-                    this.furnaceCookTime = 0;
+                if (this.progress >= this.itemCookTime) {
+                    this.progress = 0;
                     this.smeltItems();
                     update = true;
                 }
+                ++this.ashProgress;
+                if (this.ashProgress == ASH_TIME) {
+                	if (this.inv[8] != null) {
+                		if (this.inv[8].stackSize != this.inv[8].getMaxStackSize()) {
+                			this.inv[8].stackSize++;
+                		}
+                	} else {
+                		this.inv[8] = new ItemStack(MachiniTechItem.ash);
+                	}
+                	this.ashProgress = 0;
+                }
             }
             else {
-                this.furnaceCookTime = 0;
+                this.progress = 0;
             }
             if (active != this.furnaceBurnTime > 0) {
                 update = true;
@@ -345,10 +342,10 @@ public class TileEntitySmelter extends MachiniTechMachine implements ISidedInven
 				return true;
 			}
 		}
-		if (i == 17 && getItemBurnTime(itemstack, 1) != 0) {
+		if (i == 17 && getItemBurnTime(itemstack) != 0) {
 			return true;
 		}
-		if (i == 18 && this.getStackInSlot(18) == null) {
+		if (i == 18 && this.getStackInSlot(18) == null && itemstack.getItem() instanceof MachiniTechCoil) {
 			return true;
 		}
 		return false;
@@ -385,9 +382,9 @@ public class TileEntitySmelter extends MachiniTechMachine implements ISidedInven
 			return false;
 		} else {
 			if (slot == 17) {
-				return getItemBurnTime(itemstack, 1) > 0;
+				return getItemBurnTime(itemstack) > 0;
 			} else if (slot == 18) {
-				return this.getStackInSlot(18) == null;
+				return (this.getStackInSlot(18) == null && itemstack.getItem() instanceof MachiniTechCoil);
 			}
 		}
 		return false;
@@ -444,6 +441,22 @@ public class TileEntitySmelter extends MachiniTechMachine implements ISidedInven
 
 	public void setName(String displayName) {
 		this.name = displayName;
+	}
+
+	public short getItemCookTime() {
+		return this.itemCookTime;
+	}
+
+	public void setItemCookTime(int par2) {
+		this.itemCookTime = (short) par2;
+	}
+
+	public short getHeat() {
+		return this.heat;
+	}
+
+	public void setHeat(short par2) {
+		this.heat = par2;
 	}
 
 }

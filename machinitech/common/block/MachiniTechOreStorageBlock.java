@@ -3,6 +3,7 @@ package machinitech.common.block;
 import machinitech.common.core.MachiniTechCore;
 import net.minecraft.block.material.Material;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
@@ -21,5 +22,9 @@ public class MachiniTechOreStorageBlock extends MachiniTechBlock {
 		LanguageRegistry.addName(this, base.getName() + " Block");
 		GameRegistry.registerBlock(this, this.getUnlocalizedName().substring(5));
 		GameRegistry.addShapelessRecipe(new ItemStack(MachiniTechCore.ingots[base.getID() - OreMachiniTech.Ore_ID], 8), this);
+	}
+	@Override
+	public boolean isBeaconBase(World worldObj, int x, int y, int z, int beaconX, int beaconY, int beaconZ) {
+		return true;
 	}
 }
