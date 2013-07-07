@@ -1,5 +1,12 @@
 package machinitech.common.container;
 
+import machinitech.api.MachiniTechRecipes;
+import machinitech.common.container.slot.SlotDummy;
+import machinitech.common.container.slot.SlotFuel;
+import machinitech.common.container.slot.SlotHeatCoil;
+import machinitech.common.container.slot.SlotOutput;
+import machinitech.common.container.slot.SlotPhantom;
+import machinitech.common.container.slot.SlotSmeltInput;
 import machinitech.common.item.MachiniTechCoil;
 import machinitech.common.tile.TileEntitySmelter;
 import net.minecraft.entity.player.EntityPlayer;
@@ -7,7 +14,6 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.ICrafting;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.tileentity.TileEntityFurnace;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -51,6 +57,8 @@ public class ContainerSmelter extends MachiniTechContainer {
 		for (int x = 0; x < 6; x++) {
 			this.addSlotToContainer(new SlotDummy(te, x + 19, 18 * x + 8, 77));
 		}
+		//Phantom input confirmation slot
+		this.addSlotToContainer(new SlotPhantom(te, 25, 26, 38));
 		
 		//Add the player's inventory
 		int var3;
@@ -134,12 +142,16 @@ public class ContainerSmelter extends MachiniTechContainer {
             ItemStack itemstack1 = slot.getStack();
             itemstack = itemstack1.copy();
             if (slotnum >= 9 && slotnum <= 16) {//Output slots
-                if (!this.mergeItemStack(itemstack1, 25, 61, true)) {
+                if (!this.mergeItemStack(itemstack1, 26, 62, true)) {
                     return null;
                 }
                 slot.onSlotChange(itemstack1, itemstack);
             } else if (slotnum > 24) {//Player Inventory
-                if (FurnaceRecipes.smelting().getSmeltingResult(itemstack1) != null) {//Input
+            	if (MachiniTechRecipes.getSmeltingResult(itemstack1) != null && this.getSlot(25).getStack() == null) {//Phantom slot
+            		if (!this.mergeItemStack(itemstack1, 25, 26, true)) {
+            			return null;
+            		}
+            	} else if (MachiniTechRecipes.getSmeltingResult(itemstack1) != null) {//Input
                     if (!this.mergeItemStack(itemstack1, 0, 8, false)) {
                         return null;
                     }
@@ -152,15 +164,15 @@ public class ContainerSmelter extends MachiniTechContainer {
                 		return null;
                 	}
                 } else if (slotnum >= 25 && slotnum < 52) {//Place stuff in hotbar
-                    if (!this.mergeItemStack(itemstack1, 52, 61, false)) {
+                    if (!this.mergeItemStack(itemstack1, 53, 62, false)) {
                         return null;
                     }
                 } else if (slotnum >= 52 && slotnum < 61) {//Place stuff in inventory
-                	if (!this.mergeItemStack(itemstack1, 25, 52, false)) {
+                	if (!this.mergeItemStack(itemstack1, 26, 53, false)) {
                 		return null;
                 	}
                 }	
-            } else if (!this.mergeItemStack(itemstack1, 25, 61, false)) {//All others
+            } else if (!this.mergeItemStack(itemstack1, 26, 62, false)) {//All others
                 return null;
             }
             if (itemstack1.stackSize == 0) {

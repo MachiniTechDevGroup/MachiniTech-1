@@ -1,5 +1,6 @@
-package machinitech.common.container;
+package machinitech.common.container.slot;
 
+import machinitech.api.MachiniTechRecipes;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
@@ -12,7 +13,7 @@ public class SlotSmeltInput extends Slot {
 	}
 	@Override
 	public boolean isItemValid(ItemStack stack) {
-		return FurnaceRecipes.smelting().getSmeltingResult(stack) != null;
+		return FurnaceRecipes.smelting().getSmeltingResult(stack) != null || MachiniTechRecipes.getSmeltingResult(stack) != null;
 	}
 
 }

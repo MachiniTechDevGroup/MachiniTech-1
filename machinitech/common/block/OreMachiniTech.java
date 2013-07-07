@@ -9,25 +9,27 @@ import static machinitech.common.core.MachiniTechCore.config;
 public class OreMachiniTech {
 		private boolean canMakeTools = false;;
 		public String Name;
-		private Params p;
+		private Params pm;
+		private MachiniTechProps pr;
 		private int id, meta;
 		private int harv;
 		public static final int NUM_ORES = 4;
 		public static final int Ore_ID = 500;
 		public static final OreMachiniTech[] ores = new OreMachiniTech[NUM_ORES];
 		public static void createOres() {
-			ores[0] = new OreMachiniTech (config.get("Block ID", "FirstOre", 500).getInt(500), 0, "Copper", 1, config.get("Item Props", "Copper Tools", true).getBoolean(true), new OreMachiniTech.Params(1, 63, 15, 4, 12));
-			ores[1] = new OreMachiniTech (ores[0].getID() + 1, 0, "Tin", 1, config.get("Item Props", "Tin Tools", false).getBoolean(false), new OreMachiniTech.Params(16, 48, 8, 4, 8));
-			ores[2] = new OreMachiniTech (ores[1].getID() + 1, 0, "Lead", 1, config.get("Item Props", "Lead Tools", false).getBoolean(false), new OreMachiniTech.Params(16, 24, 2, 4, 8));
-			ores[3] = new OreMachiniTech (ores[2].getID() + 1, 0, "Nickel", 2, config.get("Item Props", "Nickel Tools", false).getBoolean(false), new OreMachiniTech.Params(16, 64, 4, 8, 12));
+			ores[0] = new OreMachiniTech (config.get("Block ID", "FirstOre", 500).getInt(500), 0, "Copper", 1, config.get("Item Props", "Copper Tools", true).getBoolean(true), new OreMachiniTech.Params(1, 63, 15, 4, 12), new OreMachiniTech.MachiniTechProps(2000));
+			ores[1] = new OreMachiniTech (ores[0].getID() + 1, 0, "Tin", 1, config.get("Item Props", "Tin Tools", false).getBoolean(false), new OreMachiniTech.Params(16, 48, 8, 4, 8), new OreMachiniTech.MachiniTechProps(2000));
+			ores[2] = new OreMachiniTech (ores[1].getID() + 1, 0, "Lead", 1, config.get("Item Props", "Lead Tools", false).getBoolean(false), new OreMachiniTech.Params(16, 24, 2, 4, 8), new OreMachiniTech.MachiniTechProps(2000));
+			ores[3] = new OreMachiniTech (ores[2].getID() + 1, 0, "Nickel", 2, config.get("Item Props", "Nickel Tools", false).getBoolean(false), new OreMachiniTech.Params(16, 64, 4, 8, 12), new OreMachiniTech.MachiniTechProps(4000));
 			MachiniTechBlockContainer.prepareBlocks();
 			IngotMachiniTech.createIngots(ores);
 			ToolHandler.makeTools(ores);
 			MachiniTechCore.config.save();
 		}
-		public OreMachiniTech (int i, int m, String n, int h, boolean t, Params p) {
+		public OreMachiniTech (int i, int m, String n, int h, boolean t, Params pm, MachiniTechProps pr) {
 			this.Name = n;
-			this.p = p;
+			this.pm = pm;
+			this.pr = pr;
 			this.id = i;
 			this.harv = h;
 			this.meta = m;
@@ -66,6 +68,15 @@ public class OreMachiniTech {
 				return oh;
 			}
 		}
+		public static class MachiniTechProps {
+			int heat;//The heat required to smelt the ore in the smelter
+			public MachiniTechProps(int h) {
+				this.heat = h;
+			}
+			public int getSmeltingHeat() {
+				return this.heat;
+			}
+		}
 		public int getID() {
 			return this.id;
 		}
@@ -79,7 +90,10 @@ public class OreMachiniTech {
 			return this.Name;
 		}
 		public Params getParams() {
-			return this.p;
+			return this.pm;
+		}
+		public MachiniTechProps getProps() {
+			return this.pr;
 		}
 		public boolean getTool() {
 			return this.canMakeTools;

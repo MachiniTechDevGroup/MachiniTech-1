@@ -1,4 +1,4 @@
-package machinitech.common.container;
+package machinitech.common.container.slot;
 
 import machinitech.common.item.MachiniTechCoil;
 import net.minecraft.entity.player.EntityPlayer;

@@ -1,6 +1,7 @@
 package machinitech.common.core;
 
 import machinitech.MachiniTech;
+import machinitech.api.MachiniTechRecipes;
 import machinitech.client.gui.GuiHelper;
 import machinitech.common.addon.AddonManager;
 import machinitech.common.addon.TileEntityHopperFast;
@@ -41,8 +42,6 @@ public class MachiniTechCore {
 	public static MachiniTechCoilComponent coilcomp;
 	public static MachiniTechCoil coil;
 	
-	public static TileEntityHopperFast fasthopper;
-	
 	public static Configuration config;
 	
 	public static AddonManager addon;
@@ -74,6 +73,8 @@ public class MachiniTechCore {
 		smelteractive = new MachineSmelterSmall(true);
 		
 		addon = new AddonManager();
+		
+		MachiniTechRecipes.addRecipes();
 	}
 	public static void postInit() {
 		

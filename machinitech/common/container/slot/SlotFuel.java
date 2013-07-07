@@ -1,4 +1,4 @@
-package machinitech.common.container;
+package machinitech.common.container.slot;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;

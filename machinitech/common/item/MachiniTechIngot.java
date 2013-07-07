@@ -15,7 +15,6 @@ public class MachiniTechIngot extends MachiniTechItem {
 		super(base.getID());
 		System.out.println(base.getName());
 		this.setUnlocalizedName(MachiniTechCore.ModID + ".ingot" + (base.getID() - IngotMachiniTech.Ingot_ID));
-		GameRegistry.addSmelting(OreMachiniTech.Ore_ID + base.getID() - IngotMachiniTech.Ingot_ID, new ItemStack(this), 1f);
 		LanguageRegistry.addName(this, base.getName() + " Ingot");
 		OreDictionary.registerOre("ingot" + base.getName(), new ItemStack(this));
 	}

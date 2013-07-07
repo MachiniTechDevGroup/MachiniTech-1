@@ -1,5 +1,6 @@
 package machinitech.common.tile;
 
+import machinitech.api.MachiniTechRecipes;
 import machinitech.common.block.MachineSmelterSmall;
 import machinitech.common.item.MachiniTechCoil;
 import machinitech.common.item.MachiniTechItem;
@@ -44,10 +45,12 @@ public class TileEntitySmelter extends MachiniTechMachine implements ISidedInven
 	 * 17 Fuel
 	 * 18 Coil
 	 * 19-24 Liquid I/O Slots
+	 * 25 Determining phantom slot (Cannot put smelt items if items in input != slot's item)
 	 */
-	private ItemStack[] inv = new ItemStack[25];
+	private ItemStack[] inv = new ItemStack[26];
 	public int furnaceBurnTime = 0;
 	private static final short ASH_TIME = 800;
+	private ItemStack smeltable = null;
 	private short ashProgress = 0;
 	private short coilTier = 0;
 	private LiquidTank tank;
@@ -153,6 +156,9 @@ public class TileEntitySmelter extends MachiniTechMachine implements ISidedInven
 		if (i == 18) {
 			this.coilTier = 0;
 		}
+		if (i == 25) {
+			this.smeltable = null;
+		}
         if (stack != null) {
                 if (stack.stackSize <= j) {
                         setInventorySlotContents(i, null);
@@ -185,6 +191,9 @@ public class TileEntitySmelter extends MachiniTechMachine implements ISidedInven
 			if (this.getStackInSlot(18) != null && this.getStackInSlot(18).getItem() instanceof MachiniTechCoil) {
 				this.coilTier = (short)((MachiniTechCoil)itemstack.getItem()).getTier(itemstack.getItemDamage());
 			}
+		}
+		if (i == 25) {
+			this.smeltable = itemstack;
 		}
 	}
 
@@ -240,7 +249,7 @@ public class TileEntitySmelter extends MachiniTechMachine implements ISidedInven
         	}
         }
         if (!this.worldObj.isRemote) {
-            if (this.furnaceBurnTime == 0 && this.canSmelt()) {
+            if (this.furnaceBurnTime == 0) {//Always. Burn. Fuel.
                 this.currentItemBurnTime = getItemBurnTime(this.inv[17]);
                 this.furnaceBurnTime = getItemBurnTime(this.inv[17]);
                 if (this.furnaceBurnTime > 0) {
@@ -287,27 +296,36 @@ public class TileEntitySmelter extends MachiniTechMachine implements ISidedInven
         }
 	}
 	/**
-	 * Returns true only if all eight slots of the smelter can smelt an item without interference
+	 * Returns true four or more slots of the smelter can smelt an item without interference
 	 * Does not account for fuel
 	 * @return A boolean determining whether the furnace can smelt
 	 */
 	private boolean canSmelt() {
 		int goodSlots = 0;
+		int heatreq = 0;
 		for (int s = 0; s < 8; s++) {
 			ItemStack in = this.getStackInSlot(s);
 			ItemStack out = this.getStackInSlot(s + 9);
-			ItemStack res = FurnaceRecipes.smelting().getSmeltingResult(in);
-			if (in == null) {//If one input is null, YOU SHALL NOT SMELT
-				return false;
-			}
-			if (out == null) {
-				goodSlots++;
-				continue;
-			} else if (res != null && res.stackSize + out.stackSize <= out.getMaxStackSize() && out.isItemEqual(res)) {
-				goodSlots++;
+			ItemStack res = MachiniTechRecipes.getSmeltingResult(in);
+			if (in != null) {//If one input is null, skip instead
+				if (smeltable == null) {//To catch null pointers and because you can't anyway
+					return false;
+				}
+				if (!in.isItemEqual(smeltable)) {//Only smelt smeltable
+					return false;
+				}
+				if (out == null) {
+					goodSlots++;
+					continue;
+				} else if (res != null && res.stackSize + out.stackSize <= out.getMaxStackSize() && out.isItemEqual(res)) {
+					goodSlots++;
+				}
+				if (MachiniTechRecipes.getSmeltingHeat(in) > heatreq) {
+					heatreq = MachiniTechRecipes.getSmeltingHeat(in);
+				}
 			}
 		}
-		return goodSlots == 8;
+		return goodSlots >= 4 && this.heat >= heatreq;//4 or more can smelt
 	}
 	
 	private void smeltItems() {
@@ -315,17 +333,19 @@ public class TileEntitySmelter extends MachiniTechMachine implements ISidedInven
 			for (int s = 0; s < 8; s++) {
 				ItemStack in = getStackInSlot(s);
 				ItemStack out = getStackInSlot(s + 9);
-				ItemStack res = FurnaceRecipes.smelting().getSmeltingResult(in);
-				if (this.inv[s + 9] == null) {//If nothing, copy item and quantity of the result
-		               this.inv[s + 9] = res.copy();
-				} else if (this.inv[s + 9].isItemEqual(res)) {//If the ItemStacks are the same, add the quantity
-		               inv[s + 9].stackSize += res.stackSize;
-		        }
-				//Reduce the input
-				--this.inv[s].stackSize;
-		        if (this.inv[s].stackSize <= 0) {
-		            this.inv[s] = null;
-		        }
+				ItemStack res = MachiniTechRecipes.getSmeltingResult(in);
+				if (in != null) {//Prevent NullPointers
+					if (this.inv[s + 9] == null) {//If nothing, copy item and quantity of the result
+						this.inv[s + 9] = res.copy();
+					} else if (this.inv[s + 9].isItemEqual(res)) {//If the ItemStacks are the same, add the quantity
+						inv[s + 9].stackSize += res.stackSize;
+				    }
+					//Reduce the input
+					--this.inv[s].stackSize;
+				    if (this.inv[s].stackSize <= 0) {
+				    	this.inv[s] = null;
+				    }
+				}
 			}
 		}
 	}
@@ -338,7 +358,7 @@ public class TileEntitySmelter extends MachiniTechMachine implements ISidedInven
 	@Override
 	public boolean isStackValidForSlot(int i, ItemStack itemstack) {
 		if (i >= 0 && i <= 7) {
-			if (FurnaceRecipes.smelting().getSmeltingResult(itemstack) != null) {
+			if (MachiniTechRecipes.getSmeltingResult(itemstack) != null) {
 				return true;
 			}
 		}
@@ -376,7 +396,7 @@ public class TileEntitySmelter extends MachiniTechMachine implements ISidedInven
 	public boolean canInsertItem(int slot, ItemStack itemstack, int side) {
 		if (side == 1) {
 			if (slot >= 0 && slot <= 7) {
-				return FurnaceRecipes.smelting().getSmeltingResult(itemstack) != null;
+				return MachiniTechRecipes.getSmeltingResult(itemstack) != null;
 			}
 		} else if (side == 0) {
 			return false;
