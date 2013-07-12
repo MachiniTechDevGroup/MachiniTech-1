@@ -1,0 +1,19 @@
+[
+{
+"modid": "mod_MachiniTech",
+"name": "MachiniTech-1",
+"description": "Adding machines, technology, science, and much more to the realm of Minecraft!",
+"version": "1.0.2.2",
+"credits": "Created by Bricksparts, programmed by getmemoney, pyrojak and petster.",
+"logoFile": "",
+"mcversion": "1.5.2",
+"url": "",
+"updateUrl": "",
+"authors": [ "Bricksparts", "getmemoney", "pyrojak", "petster", "Stubob10"],
+"parent":"",
+"screenshots": [],
+"dependencies": [
+"mod_MinecraftForge"
+]
+}
+]
