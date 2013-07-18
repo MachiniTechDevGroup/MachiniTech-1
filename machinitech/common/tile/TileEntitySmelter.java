@@ -2,6 +2,7 @@ package machinitech.common.tile;
 
 import machinitech.api.MachiniTechRecipes;
 import machinitech.common.block.MachineSmelterSmall;
+import machinitech.common.block.OreMachiniTech;
 import machinitech.common.item.MachiniTechCoil;
 import machinitech.common.item.MachiniTechItem;
 import net.minecraft.block.Block;
@@ -302,7 +303,10 @@ public class TileEntitySmelter extends MachiniTechMachine implements ISidedInven
 	 */
 	private boolean canSmelt() {
 		int goodSlots = 0;
-		int heatreq = 0;
+		int heatreq = 10000;
+		if (this.getStackInSlot(25) != null) {
+			heatreq = OreMachiniTech.getBasedIDMeta(this.getStackInSlot(25).itemID, this.getStackInSlot(25).getItemDamage()).getProps().getSmeltingHeat();
+		}
 		for (int s = 0; s < 8; s++) {
 			ItemStack in = this.getStackInSlot(s);
 			ItemStack out = this.getStackInSlot(s + 9);
@@ -319,9 +323,6 @@ public class TileEntitySmelter extends MachiniTechMachine implements ISidedInven
 					continue;
 				} else if (res != null && res.stackSize + out.stackSize <= out.getMaxStackSize() && out.isItemEqual(res)) {
 					goodSlots++;
-				}
-				if (MachiniTechRecipes.getSmeltingHeat(in) > heatreq) {
-					heatreq = MachiniTechRecipes.getSmeltingHeat(in);
 				}
 			}
 		}
